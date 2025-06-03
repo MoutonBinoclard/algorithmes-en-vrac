@@ -63,6 +63,3 @@ def dichotomie_sur_derive(a, b, epsilon, f=fonction):
 
 # Test de la fonction
 print(dichotomie_sur_derive(0.5, 3, 0.001))  # On cherche un extremum de f(x) sur l'intervalle [0, 5] avec une précision de 0.001
-
-
-        
