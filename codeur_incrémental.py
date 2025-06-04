@@ -40,7 +40,7 @@ codeur b  codeur a
 
 """
 
-def codeur_incremental(temps, canal_a, canal_b, nombre_fentes, position_angulaire_initiale=0):
+def codeur_incremental_precision_simple(temps, canal_a, canal_b, nombre_fentes, position_angulaire_initiale=0):
     """
     Fonction qui retourne la position du codeur en fonction du temps
     et des deux canaux A et B
@@ -75,15 +75,67 @@ def codeur_incremental(temps, canal_a, canal_b, nombre_fentes, position_angulair
 
 
 
-position_angulaire, temps_passage=codeur_incremental(temps, canal_a, canal_b, nombre_fentes=20, position_angulaire_initiale=0)
+def codeur_incremental_precision_double(temps, canal_a, canal_b, nombre_fentes, position_angulaire_initiale=0):
+    """
+    Fonction qui retourne la position du codeur en fonction du temps
+    et des deux canaux A et B
+    """
+    position_angulaire = [position_angulaire_initiale]
+    temps_passage = [temps[0]]  # On initialise avec le premier temps
+    etat_a_precedent = canal_a[0] > 2.5
+    etat_b_precedent = canal_b[0] > 2.5
+
+    for index in range(1, len(temps)):
+        etat_a_en_cours = canal_a[index] > 2.5
+        etat_b_en_cours = canal_b[index] > 2.5
+
+        if not etat_a_precedent and not etat_b_precedent and etat_a_en_cours and not etat_b_en_cours:
+            # A monte en premier, sens direct
+            position_angulaire.append(position_angulaire[-1] + 1)
+            temps_passage.append(temps[index])
+
+        elif not etat_a_precedent and not etat_b_precedent and etat_b_en_cours and not etat_a_en_cours:
+            # B monte en premier, sens inverse
+            position_angulaire.append(position_angulaire[-1] - 1)
+            temps_passage.append(temps[index])
+
+        # On regarde aussi les fronts descendants
+
+        elif etat_a_precedent and etat_b_precedent and not etat_a_en_cours and etat_b_en_cours:
+            # A descend en premier, sens direct
+            position_angulaire.append(position_angulaire[-1] + 1)
+            temps_passage.append(temps[index])
+
+        elif etat_a_precedent and etat_b_precedent and not etat_b_en_cours and etat_a_en_cours:
+            # B descend en premier, sens inverse
+            position_angulaire.append(position_angulaire[-1] - 1)
+            temps_passage.append(temps[index])
+
+        etat_a_precedent = etat_a_en_cours
+        etat_b_precedent = etat_b_en_cours
+    
+    # Convertir la le nombre de passage de fente en position angulaire
+    position_angulaire = [p * (180 / nombre_fentes) for p in position_angulaire] # 180 degrés car on regarde aussi les fronts descendants
+    return position_angulaire, temps_passage
+
+
+
+
+
+
+
+position_angulaire_simple, temps_passage_simple = codeur_incremental_precision_simple(temps, canal_a, canal_b, 20)
+position_angulaire_double, temps_passage_double = codeur_incremental_precision_double(temps, canal_a, canal_b, 20)
 
 
 
 import matplotlib.pyplot as plt
-plt.plot(temps_passage, position_angulaire, label="Position du codeur")
+plt.plot(temps_passage_simple, position_angulaire_simple, label="Position du codeur (simple)")
+plt.plot(temps_passage_double, position_angulaire_double, label="Position du codeur (double)")
 plt.xlabel("Temps (s)")
 plt.ylabel("Position angulaire (degrés)")
 plt.title("Position angulaire du codeur incrémental")
+plt.legend()
 plt.grid()
 plt.show()
 
