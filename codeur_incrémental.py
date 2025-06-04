@@ -1,30 +1,27 @@
-import math
-
-def fonction_position_angulaire(t): # En degrés
+def lecture_fichier(fichier):
     """
-    Definit la position angulaire en fonction du temps
-    pour ensuite generer les voies 1 et 2 d'un codeur
+    Lit le fichier (ici codeur.txt) et retourne les trois listes
+    Chaque liste correspond à une colonne du fichier
     """
+    temps, canal_a, canal_b = [], [], []
+    with open(fichier, encoding="utf-8") as f:
+        lines = f.readlines()
 
-    return math.sin(t)*360  # On alterne entre vitesse positive et négative pour le fun
+        # On saute les deux premières lignes d'en-tête
+        for line in lines[2:]:
+            if line.strip() == "": # Ligne vide, on la saute
+                continue
+            valeurs_ligne = line.strip().split('\t')
+            if len(valeurs_ligne) != 3:
+                continue
+            temps.append(float(valeurs_ligne[0]))
+            canal_a.append(float(valeurs_ligne[1]))
+            canal_b.append(float(valeurs_ligne[2]))
+    return temps, canal_a, canal_b
 
-def generer_voies_codeur(t_ini, t_fin, pas_temps, nombre_fentes, position_capteur1=0, position_capteur2=):
-    """
-    Genere les voies 1 et 2 d'un codeur incrémental
-    entre t_ini et t_fin avec un nombre de fentes donné
-    On obtient deux liste de la forme suivante :
-    v1 = [0, 0, 1, 0, 1, 0, ...]
-    v2 = [0, 1, 0, 1, 0, 1, ...]
-    Chaque liste contient les valeurs lues
-    L'index i correspond à la valeur lue pour le temps t_ini + i * pas_temps
-    """
+temps, canal_a, canal_b = lecture_fichier("codeur.txt")
 
-    dephasage_angulaire_capteur = 2 * math.pi / nombre_fentes  # Dephasage angulaire entre les voies
+# En regardant le fichier, on va se dire que l'état haut c'est plus que 2.5
+# Et l'état bas c'est moins que 2.5
+# (Le signal est pas mal, pas de valeur entre deux états)
 
-    t = t_ini # Initialisation du temps
-    while t <= t_fin:  # Tant que le temps est dans l'intervalle
-        position_angulaire = fonction_position_angulaire(t)
-
-
-
-def trouver_si_capteur_devant_fente(position_capteur, position_fente):
