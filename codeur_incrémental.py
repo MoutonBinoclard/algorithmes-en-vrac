@@ -37,8 +37,6 @@ temps, canal_a, canal_b = lecture_fichier("codeur.txt")
 #   *           *    |
 #    **       **
 #       *****
-#
-
 
 
 def codeur_incremental_precision_simple(temps, canal_a, canal_b, nombre_fentes, position_angulaire_initiale=0):
