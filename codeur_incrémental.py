@@ -25,20 +25,21 @@ temps, canal_a, canal_b = lecture_fichier("codeur.txt")
 # Et l'état bas c'est moins que 2.5
 # (Le signal est pas mal, pas de valeur entre deux états)
 
-"""
-On imagine cette forme pour le codeur
 
-codeur b  codeur a
-     \     /
-      *****
-   **       **     ^
-  *           *    |   Sens de rotation direct
- *      x      *   |
-  *           *    |
-   **       **
-      *****
+# On imagine cette forme pour le codeur
 
-"""
+# codeur b  codeur a
+#     \     /
+#       *****
+#    **       **     ^
+#   *           *    |   Sens de rotation direct
+#  *      x      *   |
+#   *           *    |
+#    **       **
+#       *****
+#
+
+
 
 def codeur_incremental_precision_simple(temps, canal_a, canal_b, nombre_fentes, position_angulaire_initiale=0):
     """
