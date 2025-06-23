@@ -178,6 +178,20 @@ def codeur_incremental_precision_4(temps, canal_a, canal_b, nombre_fentes, posit
     return position_angulaire, temps_passage
 
 
+def codeur_incremental_precision_4_moins_de_lignes(temps, canal_a, canal_b, nombre_fentes, position_angulaire_initiale=0):
+    etats = [(a > 2.5, b > 2.5) for a, b in zip(canal_a, canal_b)]
+    position_angulaire, temps_passage = [position_angulaire_initiale], [temps[0]]
+    for i in range(1, len(etats)):
+        if etats[i-1] != etats[i]: # Changement d'état
+            if (etats[i-1][0] != etats[i][0] and etats[i-1][0] == etats[i][1]) or \
+               (etats[i-1][1] != etats[i][1] and etats[i-1][1] != etats[i][0]):
+                position_angulaire.append(position_angulaire[-1] + 1)
+                temps_passage.append(temps[i])
+            else: # Diminution
+                position_angulaire.append(position_angulaire[-1] - 1)
+                temps_passage.append(temps[i])
+    position_angulaire = [p * (90 / nombre_fentes) for p in position_angulaire]
+    return position_angulaire, temps_passage
 
 
 
@@ -186,7 +200,7 @@ position_angulaire_simple, temps_passage_simple = codeur_incremental_precision_s
 position_angulaire_double, temps_passage_double = codeur_incremental_precision_double(temps, canal_a, canal_b, 20)
 position_angulaire_simple_bla_bla, temps_passage_simple_bla_bla = codeur_incremental_precision_simple_avec_moins_de_lignes_de_codes_bla_bla_bla(temps, canal_a, canal_b, 20)
 position_angulaire_4, temps_passage_4 = codeur_incremental_precision_4(temps, canal_a, canal_b, 20)
-
+position_angulaire_4_moins_de_lignes, temps_passage_4_moins_de_lignes = codeur_incremental_precision_4_moins_de_lignes(temps, canal_a, canal_b, 20)
 
 
 import matplotlib.pyplot as plt
@@ -194,6 +208,7 @@ plt.plot(temps_passage_simple, position_angulaire_simple, label="Position du cod
 plt.plot(temps_passage_double, position_angulaire_double, label="Position du codeur (double)")
 plt.plot(temps_passage_simple_bla_bla, position_angulaire_simple_bla_bla, label="Position du codeur (simple avec moins de lignes de code)", linestyle='--')
 plt.plot(temps_passage_4, position_angulaire_4, label="Position du codeur (quatre)", linestyle=':')
+plt.plot(temps_passage_4_moins_de_lignes, position_angulaire_4_moins_de_lignes, label="Position du codeur (quatre avec moins de lignes de code)", linestyle='-.')
 plt.xlabel("Temps (s)")
 plt.ylabel("Position angulaire (degrés)")
 plt.title("Position angulaire du codeur incrémental")
