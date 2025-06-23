@@ -39,6 +39,8 @@ temps, canal_a, canal_b = lecture_fichier("codeur.txt")
 #       *****
 
 
+# PRECISION SIMPLE
+
 def codeur_incremental_precision_simple(temps, canal_a, canal_b, nombre_fentes, position_angulaire_initiale=0):
     """
     Fonction qui retourne la position du codeur en fonction du temps
@@ -88,6 +90,11 @@ def codeur_incremental_precision_simple_avec_moins_de_lignes_de_codes_bla_bla_bl
     return position_angulaire, temps_passage
 
 
+
+
+
+# PRECISION DOUBLE
+
 def codeur_incremental_precision_double(temps, canal_a, canal_b, nombre_fentes, position_angulaire_initiale=0):
     """
     Fonction qui retourne la position du codeur en fonction du temps
@@ -135,11 +142,50 @@ def codeur_incremental_precision_double(temps, canal_a, canal_b, nombre_fentes, 
 
 
 
+# PRECISION QUATRE
+
+def codeur_incremental_precision_4(temps, canal_a, canal_b, nombre_fentes, position_angulaire_initiale=0):
+    etats = [(a > 2.5, b > 2.5) for a, b in zip(canal_a, canal_b)]
+    position_angulaire, temps_passage = [position_angulaire_initiale], [temps[0]]
+    for i in range(1, len(etats)):
+        # Augmentation
+        if etats[i-1] == (False, False) and etats[i] == (True, False):
+            position_angulaire.append(position_angulaire[-1] + 1)
+            temps_passage.append(temps[i])
+        if etats[i-1] == (True, False) and etats[i] == (True, True):
+            position_angulaire.append(position_angulaire[-1] + 1)
+            temps_passage.append(temps[i])
+        if etats[i-1] == (True, True) and etats[i] == (False, True):
+            position_angulaire.append(position_angulaire[-1] + 1)
+            temps_passage.append(temps[i])
+        if etats[i-1] == (False, True) and etats[i] == (False, False):
+            position_angulaire.append(position_angulaire[-1] + 1)
+            temps_passage.append(temps[i])
+        # Diminution
+        if etats[i-1] == (False, False) and etats[i] == (False, True):
+            position_angulaire.append(position_angulaire[-1] - 1)
+            temps_passage.append(temps[i])
+        if etats[i-1] == (False, True) and etats[i] == (True, True):
+            position_angulaire.append(position_angulaire[-1] - 1)
+            temps_passage.append(temps[i])
+        if etats[i-1] == (True, True) and etats[i] == (True, False):
+            position_angulaire.append(position_angulaire[-1] - 1)
+            temps_passage.append(temps[i])
+        if etats[i-1] == (True, False) and etats[i] == (False, False):
+            position_angulaire.append(position_angulaire[-1] - 1)
+            temps_passage.append(temps[i])
+    position_angulaire = [p * (90 / nombre_fentes) for p in position_angulaire]
+    return position_angulaire, temps_passage
+
+
+
+
 
 
 position_angulaire_simple, temps_passage_simple = codeur_incremental_precision_simple(temps, canal_a, canal_b, 20)
 position_angulaire_double, temps_passage_double = codeur_incremental_precision_double(temps, canal_a, canal_b, 20)
 position_angulaire_simple_bla_bla, temps_passage_simple_bla_bla = codeur_incremental_precision_simple_avec_moins_de_lignes_de_codes_bla_bla_bla(temps, canal_a, canal_b, 20)
+position_angulaire_4, temps_passage_4 = codeur_incremental_precision_4(temps, canal_a, canal_b, 20)
 
 
 
@@ -147,12 +193,48 @@ import matplotlib.pyplot as plt
 plt.plot(temps_passage_simple, position_angulaire_simple, label="Position du codeur (simple)")
 plt.plot(temps_passage_double, position_angulaire_double, label="Position du codeur (double)")
 plt.plot(temps_passage_simple_bla_bla, position_angulaire_simple_bla_bla, label="Position du codeur (simple avec moins de lignes de code)", linestyle='--')
+plt.plot(temps_passage_4, position_angulaire_4, label="Position du codeur (quatre)", linestyle=':')
 plt.xlabel("Temps (s)")
 plt.ylabel("Position angulaire (degrés)")
 plt.title("Position angulaire du codeur incrémental")
 plt.legend()
 plt.grid()
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
